@@ -1,0 +1,37 @@
+name: ESLint, typecheck and build
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ develop, main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v3
+      
+      # Fix Git Safe Directory
+      - name: Fix Git Safe Directory
+        run: |
+          git config --global --add safe.directory /github/workspace
+          git config --global --add safe.directory "*"
+
+      # Install dependencies
+      - name: Install dependencies and packages
+        run: yarn install
+
+      # Run the lint script
+      - name: Run the lint Script
+        run: yarn lint
+
+      # Run the typecheck script
+      - name: Run the typecheck Script
+        run: yarn typecheck
+
+      # Run the build script
+      - name: Run the build Script
+        run: yarn build
