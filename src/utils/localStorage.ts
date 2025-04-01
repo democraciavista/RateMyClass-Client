@@ -1,3 +1,4 @@
+'use client';
 export const APP_KEY = 'APPKEY';
 
 function getStorageItem(key: string) {
