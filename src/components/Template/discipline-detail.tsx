@@ -1,5 +1,6 @@
 import { HeaderSection } from "../atom/header-section";
 import { InfoField } from "../molecules/info-field";
+import { SemesterChart } from "../molecules/semester-chart";
 import { DisciplineTabs } from "../organisms/discipline-tabs";
 import { Button } from "../ui/button";
 
@@ -13,11 +14,18 @@ export const DisciplineDetail = () => {
             likes: 22
         }
     ];
+      const semesterData = [
+          { semester: '2022.1', rating: 3.1 },
+          { semester: '2022.2', rating: 3.0 },
+          { semester: '2023.1', rating: 3.2 },
+          { semester: '2023.2', rating: 3.1 },
+          { semester: '2024.1', rating: 3.3 }
+      ];
 
     return (
         <div className="max-w-4xl mx-auto p-6">
             <div className="flex justify-between items-center mb-6">
-                <HeaderSection text="Disciplina"/>
+                <HeaderSection text="Disciplina" />
                 <div className="flex gap-2">
                     <Button>Fazer Avaliação</Button>
                     <Button>Enviar Material</Button>
@@ -49,7 +57,7 @@ export const DisciplineDetail = () => {
                     value="dffdsfsdf"
                 />
             </div>
-            <DisciplineTabs reviews={reviews} />
+            <DisciplineTabs reviews={reviews} semesterData={semesterData} />
         </div>
     );
 };

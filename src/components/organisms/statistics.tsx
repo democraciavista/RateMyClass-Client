@@ -12,11 +12,11 @@ const semesterData = [
 ];
 
 const ratingDistribution = [
-    { stars: 5, percentage: 60, color: '#3b82f6' },
-    { stars: 4, percentage: 20, color: '#3b82f6' },
-    { stars: 3, percentage: 10, color: '#3b82f6' },
-    { stars: 2, percentage: 7, color: '#3b82f6' },
-    { stars: 1, percentage: 3, color: '#3b82f6' }
+    { stars: '8 - 10', percentage: 60, color: '#3b82f6' },
+    { stars: '6 - 8', percentage: 20, color: '#3b82f6' },
+    { stars: '4 - 6', percentage: 10, color: '#3b82f6' },
+    { stars: '2 - 4', percentage: 7, color: '#3b82f6' },
+    { stars: '0 - 2', percentage: 3, color: '#3b82f6' }
 ];
 
 export const Statistics = () => (
@@ -26,6 +26,16 @@ export const Statistics = () => (
                 icon={<BookOpen className="h-6 w-6 text-gray-500" />}
                 value="20%"
                 label="% de Estudantes que foram para a final"
+            />
+            <StatisticCard
+                icon={<Star className="h-6 w-6 text-gray-500" />}
+                value="20%"
+                label="Nota Média dos Estudantes na disciplina"
+            />
+            <StatisticCard
+                icon={<Star className="h-6 w-6 text-gray-500" />}
+                value="20%"
+                label="Nota Média dos Estudantes na disciplina"
             />
             <StatisticCard
                 icon={<Star className="h-6 w-6 text-gray-500" />}

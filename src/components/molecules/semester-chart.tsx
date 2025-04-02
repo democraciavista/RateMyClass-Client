@@ -45,7 +45,7 @@ export const SemesterChart = ({ data }: SemesterChartProps) => (
                             if (active && payload && payload.length) {
                                 return (
                                     <div className="bg-white p-2 border shadow-sm rounded">
-                                        <p className="text-sm">{`${payload[0].payload.semester}: ${payload[0].value}`}</p>
+                                        <p className="text-sm">{`Média ${payload[0].value}`}</p>
                                     </div>
                                 );
                             }

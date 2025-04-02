@@ -1,8 +1,8 @@
-import { ReviewCard } from "../molecules/review-card";
+import { ReviewCard } from '../molecules/review-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ListMaterial } from "./list-materials";
-import { Statistics } from "./statistics";
-
+import { ListMaterial } from './list-materials';
+import { Statistics } from './statistics';
+import { SemesterChart } from '../molecules/semester-chart';
 
 type DisciplineTabsProps = {
     reviews: Array<{
@@ -11,11 +11,17 @@ type DisciplineTabsProps = {
         review: string;
         recommendation: string;
         likes: number;
-
+    }>;
+    semesterData: Array<{
+        semester: string;
+        rating: number;
     }>;
 };
 
-export const DisciplineTabs = ({ reviews }: DisciplineTabsProps) => (
+export const DisciplineTabs = ({
+    reviews,
+    semesterData
+}: DisciplineTabsProps) => (
     <Tabs
         defaultValue="avaliacoes"
         className="w-full"
@@ -52,7 +58,10 @@ export const DisciplineTabs = ({ reviews }: DisciplineTabsProps) => (
             <ListMaterial />
         </TabsContent>
         <TabsContent value="estatistica">
-            <Statistics />
+            <div className="mb-4">
+                <Statistics />
+            </div>
+            <SemesterChart data={semesterData} />
         </TabsContent>
     </Tabs>
 );
