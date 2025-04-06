@@ -1,5 +1,11 @@
 'use client';
-import { useState } from 'react';
+import {
+    Controller,
+    Control,
+    UseFormHandleSubmit,
+    FieldValues,
+    Path
+} from 'react-hook-form';
 import { Input } from '../ui/input';
 import {
     Select,
@@ -12,76 +18,68 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
+import { useState } from 'react';
 
-function Filtrer({
+function Filtrer<T extends FieldValues>({
     open,
-    setOpen
+    setOpen,
+    control,
+    error,
+    setValue,
+    watch,
+    handleSubmit,
+    onSubmit
 }: {
+    onSubmit?: () => void;
     open: boolean;
     setOpen: (value: boolean) => void;
+    control: Control<T>;
+    error?: boolean;
+    setValue: (name: keyof T, value: any) => void;
+    watch: () => any;
+    handleSubmit: UseFormHandleSubmit<FieldValues, undefined>;
 }) {
-    const [filters, setFilters] = useState<{
-        codigo: string;
-        periodo: number[];
-        professor: string;
-        curso: string[];
-        centro: string[];
-        tipo: string;
-    }>({
-        codigo: '',
-        periodo: [],
-        professor: '',
-        curso: [],
-        centro: [],
-        tipo: ''
-    });
-    const [periodo, setPeriodo] = useState<number>(0);
+    const [selectedValue, setSelectedValue] = useState<number>(0);
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && periodo > 0) {
-            e.preventDefault();
-            handleAdd('periodo', periodo);
-            setPeriodo(0);
-        }
-    };
-    const handleFilterChange = (
-        field: string,
-        value: string | number[] | string[]
+    const filters = watch();
+
+    function clearFilters() {
+        setValue('professor', '');
+        setValue('curso', []);
+        setValue('centro', []);
+        setValue('periodo', []);
+        setValue('tipo', '');
+        setValue('codigo', '');
+        setSelectedValue(0);
+    }
+    const handleAdd = (
+        type: 'curso' | 'centro' | 'periodo',
+        value: string | number
     ) => {
-        setFilters((prev) => ({ ...prev, [field]: value }));
+        const currentValues = filters[type];
+        if (type === 'periodo' && typeof value === 'number') {
+            setValue(type, [...(currentValues as number[]), value as number]);
+        } else {
+            setValue(type, [...(currentValues as string[]), value as string]);
+        }
     };
-    function handleAdd(type: keyof typeof filters, value: string | number) {
-        if (
-            (type === 'curso' || type === 'centro') &&
-            typeof value === 'string'
-        ) {
-            if (filters[type].includes(value)) return;
+
+    const handleRemove = (
+        type: 'curso' | 'centro' | 'periodo',
+        value: string | number
+    ) => {
+        if (type === 'periodo') {
+            setValue(
+                type,
+                filters[type].filter((item: number) => item !== value)
+            );
+        } else {
+            setValue(
+                type,
+                filters[type].filter((item: string) => item !== value)
+            );
         }
-        if (type === 'periodo' && typeof value === 'number') {
-            if (filters.periodo.includes(value)) return;
-        }
-        setFilters((prev) => ({
-            ...prev,
-            [type]: [...prev[type], value]
-        }));
-    }
-    function handleRemove(type: keyof typeof filters, value: string | number) {
-        if (
-            (type === 'curso' || type === 'centro') &&
-            typeof value === 'string'
-        ) {
-            setFilters((prev) => ({
-                ...prev,
-                [type]: prev[type].filter((item) => item !== value)
-            }));
-        }
-        if (type === 'periodo' && typeof value === 'number') {
-            setFilters((prev) => ({
-                ...prev,
-                [type]: prev[type].filter((item) => item !== value)
-            }));
-        }
-    }
+    };
 
     return (
         <Sheet
@@ -92,30 +90,57 @@ function Filtrer({
                 <SheetHeader>
                     <SheetTitle>Filtros</SheetTitle>
                 </SheetHeader>
-                <div className="py-4 space-y-6">
+                <form
+                    onSubmit={onSubmit!}
+                    className="py-4 space-y-6"
+                >
                     <div className="space-y-2">
                         <Label>Código</Label>
-                        <Input
-                            type="text"
-                            placeholder="Digite o código"
-                            value={filters.codigo}
-                            onChange={(e) =>
-                                handleFilterChange('codigo', e.target.value)
-                            }
+                        <Controller
+                            name={'codigo' as Path<T>}
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    placeholder="Digite o código"
+                                    {...field}
+                                />
+                            )}
                         />
                     </div>
 
                     <div className="space-y-2">
                         <Label>Período</Label>
-                        <Input
-                            type="number"
-                            placeholder="Digite o período"
-                            value={periodo}
-                            onKeyDown={handleKeyDown}
-                            onChange={(e) => setPeriodo(Number(e.target.value))}
+                        <Controller
+                            name={'periodo' as Path<T>}
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="number"
+                                    placeholder="Digite o período"
+                                    value={selectedValue}
+                                    onChange={(e) => {
+                                        field.onChange(Number(e.target.value));
+                                        setSelectedValue(
+                                            Number(e.target.value)
+                                        );
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === 'Enter' &&
+                                            selectedValue > 0
+                                        ) {
+                                            e.preventDefault();
+                                            handleAdd('periodo', selectedValue);
+                                            field.onChange(0);
+                                            setSelectedValue(0);
+                                        }
+                                    }}
+                                />
+                            )}
                         />
                         <div className="flex flex-wrap gap-2 mt-2">
-                            {filters.periodo.map((period) => (
+                            {filters.periodo.map((period: number) => (
                                 <Badge
                                     key={period}
                                     onClick={() =>
@@ -131,32 +156,49 @@ function Filtrer({
 
                     <div className="space-y-2">
                         <Label>Professor</Label>
-                        <Input
-                            type="text"
-                            placeholder="Nome do professor"
-                            value={filters.professor}
-                            onChange={(e) =>
-                                handleFilterChange('professor', e.target.value)
-                            }
+                        <Controller
+                            name={'professor' as Path<T>}
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    placeholder="Nome do professor"
+                                    {...field}
+                                />
+                            )}
                         />
                     </div>
 
                     <div className="space-y-2">
                         <Label>Curso</Label>
-                        <Select
-                            onValueChange={(value) => handleAdd('curso', value)}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o curso" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="curso1">Curso 1</SelectItem>
-                                <SelectItem value="curso2">Curso 2</SelectItem>
-                                <SelectItem value="curso3">Curso 3</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Controller
+                            name={'curso' as Path<T>}
+                            control={control}
+                            render={() => (
+                                <Select
+                                    onValueChange={(value) =>
+                                        handleAdd('curso', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecione o curso" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="curso1">
+                                            Curso 1
+                                        </SelectItem>
+                                        <SelectItem value="curso2">
+                                            Curso 2
+                                        </SelectItem>
+                                        <SelectItem value="curso3">
+                                            Curso 3
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                         <div className="flex flex-wrap gap-2 mt-2">
-                            {filters.curso.map((curso) => (
+                            {filters.curso.map((curso: string) => (
                                 <Badge
                                     key={curso}
                                     onClick={() => handleRemove('curso', curso)}
@@ -170,34 +212,40 @@ function Filtrer({
 
                     <div className="space-y-2">
                         <Label>Centro</Label>
-                        <Select
-                            onValueChange={(value) =>
-                                handleAdd('centro', value)
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o centro" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="centro1">
-                                    centro 1
-                                </SelectItem>
-                                <SelectItem value="centro2">
-                                    centro 2
-                                </SelectItem>
-                                <SelectItem value="centro3">
-                                    centro 3
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Controller
+                            name={'centro' as Path<T>}
+                            control={control}
+                            render={() => (
+                                <Select
+                                    onValueChange={(value) =>
+                                        handleAdd('centro', value)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecione o centro" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="centro1">
+                                            Centro 1
+                                        </SelectItem>
+                                        <SelectItem value="centro2">
+                                            Centro 2
+                                        </SelectItem>
+                                        <SelectItem value="centro3">
+                                            Centro 3
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                         <div className="flex flex-wrap gap-2 mt-2">
-                            {filters.centro.map((centro) => (
+                            {filters.centro.map((centro: string) => (
                                 <Badge
                                     key={centro}
                                     onClick={() =>
                                         handleRemove('centro', centro)
                                     }
-                                    className="centror-pointer"
+                                    className="cursor-pointer"
                                 >
                                     {centro} ✕
                                 </Badge>
@@ -207,47 +255,49 @@ function Filtrer({
 
                     <div className="space-y-2">
                         <Label>Tipo</Label>
-                        <Select
-                            value={filters.tipo}
-                            onValueChange={(value) =>
-                                handleFilterChange('tipo', value)
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione o tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="tipo1">Tipo 1</SelectItem>
-                                <SelectItem value="tipo2">Tipo 2</SelectItem>
-                                <SelectItem value="tipo3">Tipo 3</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Controller
+                            name={'tipo' as Path<T>}
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecione o tipo" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="tipo1">
+                                            Tipo 1
+                                        </SelectItem>
+                                        <SelectItem value="tipo2">
+                                            Tipo 2
+                                        </SelectItem>
+                                        <SelectItem value="tipo3">
+                                            Tipo 3
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                     </div>
 
                     <Button
-                        onClick={() =>
-                            setFilters({
-                                codigo: '',
-                                periodo: [],
-                                professor: '',
-                                curso: [],
-                                centro: [],
-                                tipo: ''
-                            })
-                        }
+                        type="button"
+                        onClick={clearFilters}
                         variant="outline"
                         className="w-full"
                     >
-                        Limpar filtros
+                        Limpar Filtros
                     </Button>
                     <Button
-                        onClick={() => console.log(filters)}
+                        type="submit"
                         variant="outline"
                         className="w-full"
                     >
                         Buscar
                     </Button>
-                </div>
+                </form>
             </SheetContent>
         </Sheet>
     );

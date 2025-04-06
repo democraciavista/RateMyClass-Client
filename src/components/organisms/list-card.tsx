@@ -1,58 +1,43 @@
+'use client';
 import { Heart, Star } from 'lucide-react';
 import { CardContainerSection } from '../atom/container-card';
 import { CardContentSection } from '../atom/content-card';
 import { CardFooterSection } from '../atom/footer-card';
 import { ItemBadge } from '../atom/item-badge';
 import { Button } from '../ui/button';
-import { DisciplineType } from '@/@types';
 import { useDiscipline } from '@/hooks/useDiscipline';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { DisciplineType } from '@/@types';
 
-function ListCard() {
+function ListCard({ data }: { data?: DisciplineType[] }) {
     const { mapType, getColorClass } = useDiscipline();
-    const array: DisciplineType[] = [
-        {
-            id: '1',
-            center: 'IF',
-            code: 'IF979',
-            name: 'Cálculo 2',
-            professor: 'Juliana Saraíva',
-            period: 2,
-            hours: 60,
-            course: 'Ciência da Computação',
-            type: 'MANDATORY'
-        },
-        {
-            id: '2',
-            center: 'IF',
-            code: 'IF979',
-            name: 'Cálculo 2',
-            professor: 'Juliana Saraíva',
-            period: 2,
-            hours: 60,
-            course: 'Ciência da Computação',
-            type: 'MANDATORY'
-        },
-        {
-            id: '3',
-            center: 'IF',
-            code: 'IF979',
-            name: 'Cálculo 2',
-            professor: 'Juliana Saraíva',
-            period: 2,
-            hours: 60,
-            course: 'Ciência da Computação',
-            type: 'MANDATORY'
-        }
-    ];
-    return array.map((item) => {
+
+    if (data?.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <p className="text-gray-500">Nenhuma disciplina encontrada</p>
+            </div>
+        );
+    }
+
+    return data?.map((item) => {
         return (
             <CardContainerSection key={item.id}>
                 <CardContentSection>
                     <div>
                         <div className="flex items-center gap-2">
-                            <h2 className="font-bold text-lg">{item.name}</h2>
+                            <Button
+                                variant="link"
+                                className="p-0"
+                            >
+                                <Link
+                                    href={'/disciplinas/' + item.id}
+                                    className="font-bold text-lg"
+                                >
+                                    {item.name}
+                                </Link>
+                            </Button>{' '}
                             <ItemBadge> {item.code}</ItemBadge>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
@@ -89,16 +74,15 @@ function ListCard() {
                         <ItemBadge>{item.hours} horas</ItemBadge>
                         <ItemBadge>{item.center}</ItemBadge>
                     </div>
-                    <Button className="bg-blue-500 hover:bg-blue-600 text-sm">
+                    <Button className="bg-blueDark hover:bg-blue-600 text-sm">
                         <Link
-                            href={'/discipline/' + item.id}
+                            href={'/disciplinas/' + item.id + '/formulario'}
                             className="w-full"
                         >
                             Avaliar
                         </Link>{' '}
                     </Button>
                 </CardFooterSection>
-              
             </CardContainerSection>
         );
     });

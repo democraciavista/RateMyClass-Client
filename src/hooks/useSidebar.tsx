@@ -33,12 +33,12 @@ function useSideBar() {
         {
             label: 'Disciplinas Favoritas',
             icon: <Bookmark size={20} />,
-            link: '/disciplinas-favoritas'
+            link: '/disciplinas/favdisciplina'
         },
         {
             label: 'Materiais Favoritos',
             icon: <Bookmark size={20} />,
-            link: '/materiais-favoritos'
+            link: '/materiais/favmaterial'
         },
         {
             label: 'Configurações',

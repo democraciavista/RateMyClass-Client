@@ -1,5 +1,5 @@
 'use client';
-import { type Control, Controller } from 'react-hook-form';
+import { type Control, Controller, FieldValues } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import clsx from 'clsx';
 
@@ -12,7 +12,7 @@ type InputSearchProps = React.InputHTMLAttributes<HTMLInputElement> & {
 function InputSearch({ className, control, name, ...props }: InputSearchProps) {
     return (
         <Controller
-            control={control}
+            control={control as Control}
             name={name}
             render={({ field: { onChange, onBlur, value, ref } }) => (
                 <Input

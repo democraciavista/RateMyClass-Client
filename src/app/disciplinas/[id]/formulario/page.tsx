@@ -5,7 +5,7 @@ import { SideBar } from '@/components/Template/layout-sidebar';
 export default function Forms() {
     return (
         <SideBar>
-            <HeaderSection text="Buscar Materiais" />
+            <HeaderSection text="Avaliar Disciplina" />
             <DisciplineEvaluationForm />
         </SideBar>
     );

@@ -3,22 +3,95 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListMaterial } from './list-materials';
 import { Statistics } from './statistics';
 import { SemesterChart } from '../molecules/semester-chart';
+import { RatingDistribution } from '../molecules/rating-distribution';
+import { MaterialType } from '@/@types';
+
 
 type DisciplineTabsProps = {
     reviews: Array<{
-        date: string;
+        update: string;
+        periodPaid: number;
         rating: number;
-        review: string;
+        comment: string;
         recommendation: string;
         likes: number;
+        likeId?: string;
+        reportId?: string;
+
     }>;
     semesterData: Array<{
         semester: string;
         rating: number;
     }>;
+    ratingDistribution: Array<{
+        stars: string;
+        percentage: number;
+        color: string;
+    }>;
 };
 
+const array: MaterialType[] = [
+        {
+            id: '1',
+            disciplineId: '1',
+            link: 'https://www.google.com',
+            title: 'Resumo de Cálculo 2',
+            userId: '1',
+            reviewsLikeCount: 0,
+            discipline: {
+                id: '1',
+                code: 'IF979',
+                name: 'Cálculo 2',
+                professor: 'Juliana Saraíva',
+                center: 'IF',
+                period: 2,
+                hours: 60,
+                course: 'Ciência da Computação',
+                type: 'MANDATORY'
+            }
+
+        },
+        {
+            id: '2',
+            disciplineId: '1',
+            link: 'https://www.google.com',
+            title: 'Fórmulas de Cálculo 2',
+            userId: '1',
+            reviewsLikeCount: 0,
+            discipline: {
+                id: '1',
+                code: 'IF979',
+                name: 'Cálculo 2',
+                professor: 'Juliana Saraíva',
+                center: 'IF',
+                period: 2,
+                hours: 60,
+                course: 'Ciência da Computação',
+                type: 'MANDATORY'
+            }
+        },
+        {
+            id: '3',
+            disciplineId: '1',
+            link: 'https://www.google.com',
+            title: 'Exercícios de Cálculo 2',
+            userId: '1',
+            reviewsLikeCount: 0,
+            discipline: {
+                id: '1',
+                code: 'IF979',
+                name: 'Cálculo 2',
+                professor: 'Juliana Saraíva',
+                center: 'IF',
+                period: 2,
+                hours: 60,
+                course: 'Ciência da Computação',
+                type: 'MANDATORY'
+            }
+        }
+    ];
 export const DisciplineTabs = ({
+    ratingDistribution,
     reviews,
     semesterData
 }: DisciplineTabsProps) => (
@@ -55,13 +128,19 @@ export const DisciplineTabs = ({
             ))}
         </TabsContent>
         <TabsContent value="material">
-            <ListMaterial />
+            <ListMaterial
+                materials={array}
+                withoutInformation
+            />
         </TabsContent>
         <TabsContent value="estatistica">
-            <div className="mb-4">
+            <div className="space-y-6">
                 <Statistics />
+
+                <RatingDistribution ratings={ratingDistribution} />
+
+                <SemesterChart data={semesterData} />
             </div>
-            <SemesterChart data={semesterData} />
         </TabsContent>
     </Tabs>
 );
