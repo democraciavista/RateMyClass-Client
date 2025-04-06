@@ -42,4 +42,29 @@ interface MaterialType {
     reviewsLikeCount: number;
 }
 
-export type { MaterialType };
+interface ParamsGetMaterial {
+    title?: string | undefined;
+    disciplina?: string | undefined;
+    curso?: string[] | undefined;
+    professor?: string | undefined;
+    ordem?: 'asc' | 'desc' | undefined;
+    ordemBy?: string | undefined;
+}
+
+interface PostMaterialType {
+    title: string;
+    link: string;
+    userId: string;
+    disciplineId: string;
+}
+type ParamsGetMaterialFavorite = ParamsGetMaterial & {
+};
+type UpdateMaterialType = Partial<PostMaterialType>;
+
+export type {
+    MaterialType,
+    ParamsGetMaterial,
+    PostMaterialType,
+    ParamsGetMaterialFavorite,
+    UpdateMaterialType
+};
