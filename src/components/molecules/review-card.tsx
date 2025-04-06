@@ -42,9 +42,8 @@ export const ReviewCard = ({
                     <Ban
                         className={cn(
                             'h-5 w-5 ml-1 cursor-pointer',
-                            true
-                                ? 'text-red-500  hover:text-red-400'
-                                : 'text-gray-400 hover:text-gray-300'
+                            'text-red-500  hover:text-red-400'
+                                // : 'text-gray-400 hover:text-gray-300'
                         )}
                     />{' '}
                 </button>
